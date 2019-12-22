@@ -1,26 +1,43 @@
 #include <iostream>
+#include <string>
+
 
 void initialize()
 {
 }
 
+void prompt()
+{
+    std::cout << "$ ";
+}
+
+void parseLine(const std::string& line)
+{
+
+}
+
 void mainLoop()
 {
-    char c;
+    std::string line;
     while(!std::cin.eof())
     {
-        std::cin >> c;
-        std::cout << static_cast<int>(c) << std::endl;
+        prompt();
+        std::getline(std::cin, line);
+        parseLine(line);
     }
-    std::cout << "done" << std::endl;
 }
 
 void shutDown()
 {
 }
+
 int main(int argv, char **argc)
 {
+    initialize();
 
+    mainLoop();
+
+    shutDown();
 
     return EXIT_SUCCESS;
 }
