@@ -9,7 +9,7 @@
 
 class BuiltinCaller{
     public:
-    static void RegisterBuiltin(const std::string& name, BuiltinType& builtin);
+    static void RegisterBuiltin(const std::string& name, BuiltinType builtin);
     static void CallBuiltin(const std::string& name);
 
     private:

@@ -2,7 +2,7 @@
 
 BuiltinCaller::BuiltinMapType BuiltinCaller::Builtins;
 
-void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinType& builtin)
+void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinType builtin)
 {
     if(name.empty())
     {

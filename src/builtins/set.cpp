@@ -8,5 +8,6 @@ namespace Builtins
 int set(ParserState& state, BuiltinStreams& streams, int argc, char** argv)
 {
     std::cout << "Setting var" << std::endl;
+    return EXIT_SUCCESS;
 }
 }
