@@ -2,6 +2,14 @@
 
 BuiltinCaller::BuiltinMapType BuiltinCaller::Builtins;
 
+bool BuiltinCaller::HasBuiltin(const std::string& name)
+{
+    if(name.empty())
+    {
+        return false;
+    }
+    return BuiltinCaller::Builtins.count(name) != 0;
+}
 void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinType builtin)
 {
     if(name.empty())
@@ -25,4 +33,3 @@ void BuiltinCaller::CallBuiltin(const std::string& name)
     BuiltinStreams b;
     builtin(p, b, 0, nullptr); // TODO: properly call
 }
-

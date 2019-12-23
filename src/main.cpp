@@ -1,9 +1,15 @@
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <vector>
 
 #include "BuiltinCaller.h"
 #include "builtins/set.h"
 #include "builtins/echo.h"
+
+// TODO: first thing: create class to register all builtins, use it in initialize
+// TODO: then -> tokenize, analyze first word and call builtin (without looking at params)
+// TODO: then -> if not builtin, launch program
 
 void initialize()
 {
@@ -22,13 +28,28 @@ void parseLine(const std::string& line)
     {
         return;
     }
-    if(line.find("echo") != std::string::npos)
+    // TODO: will need to to more if handling quotes
+    std::vector<std::string> tokens;
+    std::stringstream ss(line);
+
+    std::string temp;
+    while(getline(ss, temp, ' '))
     {
-        BuiltinCaller::CallBuiltin("echo");
+        if(!temp.empty())
+        {
+            tokens.push_back(temp);
+        }
     }
-    if(line.find("set") != std::string::npos)
+
+    if(tokens.empty())
     {
-        BuiltinCaller::CallBuiltin("set");
+        return;
+    }
+
+    const std::string command = tokens[0];
+    if(BuiltinCaller::HasBuiltin(command))
+    {
+        BuiltinCaller::CallBuiltin(command);
     }
 }
 
