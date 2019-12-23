@@ -14,6 +14,7 @@ struct BuiltinStreams{
     std::stringstream out;
 };
 
-using BuiltinType = std::function<int(ParserState& state, BuiltinStreams& streams, int argc, char** argv)>;
+using BuiltinFunctionType = int(ParserState& state, BuiltinStreams& streams, int argc, char** argv);
+using BuiltinType = std::function<BuiltinFunctionType>;
 
 #endif

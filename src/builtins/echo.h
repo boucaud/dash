@@ -4,7 +4,7 @@
 #include "../Builtin.h"
 namespace Builtins
 {
-int echo(ParserState& state, BuiltinStreams& streams, int argc, char** argv);
+    BuiltinFunctionType echo;
 }
 
 #endif
