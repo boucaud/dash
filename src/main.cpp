@@ -40,6 +40,12 @@ std::string expandToken(const std::string& token)
                 result.append(state.getEnvironment().get(std::string(it+1, end)).getValue());
                 return result;
             break;
+            case '\\':
+                if(it + 1 != end)
+                {
+                    result.push_back(*(++it));
+                }
+            break;
             default:
                 result.push_back(*it);
         }
