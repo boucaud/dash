@@ -8,8 +8,10 @@
 #include "builtins/echo.h"
 
 // TODO: first thing: create class to register all builtins, use it in initialize
-// TODO: then -> tokenize, analyze first word and call builtin (without looking at params)
 // TODO: then -> if not builtin, launch program
+
+// TODO: move ofc
+ParserState state;
 
 void initialize()
 {
@@ -22,6 +24,29 @@ void prompt()
     std::cout << "$ ";
 }
 
+std::string expandToken(const std::string& token)
+{
+    auto it = token.begin();
+    auto end = token.end();
+
+    std::string result;
+    result.reserve(token.size());
+
+    while(it != end)
+    {
+        switch(*it)
+        {
+            case '$':
+                result.append(state.getEnvironment().get(std::string(it+1, end)).getValue());
+                return result;
+            break;
+            default:
+                result.push_back(*it);
+        }
+        ++it;
+    }
+    return result;
+}
 void parseLine(const std::string& line)
 {
     if(line.empty())
@@ -37,7 +62,11 @@ void parseLine(const std::string& line)
     {
         if(!temp.empty())
         {
-            tokens.push_back(temp);
+            std::string expanded = expandToken(temp);
+            if(!expanded.empty())
+            {
+                tokens.push_back(expanded);
+            }
         }
     }
 
@@ -49,7 +78,7 @@ void parseLine(const std::string& line)
     const std::string command = tokens[0];
     if(BuiltinCaller::HasBuiltin(command))
     {
-        BuiltinCaller::CallBuiltin(command, tokens);
+        BuiltinCaller::CallBuiltin(command, state, tokens);
     }
 }
 
