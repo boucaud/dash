@@ -1,9 +1,9 @@
 #ifndef BUILTIN_H
 #define BUILTIN_H
 
-
-#include <functional>
 #include <sstream>
+#include <vector>
+#include <string>
 
 #include "ParserState.h"
 
@@ -14,7 +14,6 @@ struct BuiltinStreams{
     std::stringstream out;
 };
 
-using BuiltinFunctionType = int(ParserState& state, BuiltinStreams& streams, int argc, char** argv);
-using BuiltinType = std::function<BuiltinFunctionType>;
+using BuiltinFunctionType = int(ParserState& state, BuiltinStreams& streams, const std::vector<std::string>& argv);
 
 #endif

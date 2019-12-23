@@ -1,5 +1,7 @@
 #include "BuiltinCaller.h"
 
+#include <iostream>
+
 BuiltinCaller::BuiltinMapType BuiltinCaller::Builtins;
 
 bool BuiltinCaller::HasBuiltin(const std::string& name)
@@ -10,7 +12,7 @@ bool BuiltinCaller::HasBuiltin(const std::string& name)
     }
     return BuiltinCaller::Builtins.count(name) != 0;
 }
-void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinType builtin)
+void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinFunctionType* builtin)
 {
     if(name.empty())
     {
@@ -19,17 +21,18 @@ void BuiltinCaller::RegisterBuiltin(const std::string& name, BuiltinType builtin
     BuiltinCaller::Builtins[name] = builtin;
 }
 
-void BuiltinCaller::CallBuiltin(const std::string& name)
+void BuiltinCaller::CallBuiltin(const std::string& name, const std::vector<std::string>& argv)
 {
     if(name.empty() || BuiltinCaller::Builtins.count(name) == 0)
     {
         return;
     }
-    BuiltinType builtin = BuiltinCaller::Builtins[name];
+    auto builtin = BuiltinCaller::Builtins[name];
 
     // TODO: remove
     char toRemove[1][1];
     ParserState p;
     BuiltinStreams b;
-    builtin(p, b, 0, nullptr); // TODO: properly call
+    builtin(p, b, argv); // TODO: properly call
+    std::cout <<b.out.str();
 }

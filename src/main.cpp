@@ -49,7 +49,7 @@ void parseLine(const std::string& line)
     const std::string command = tokens[0];
     if(BuiltinCaller::HasBuiltin(command))
     {
-        BuiltinCaller::CallBuiltin(command);
+        BuiltinCaller::CallBuiltin(command, tokens);
     }
 }
 

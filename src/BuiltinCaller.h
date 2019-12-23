@@ -2,19 +2,17 @@
 #define BUILTIN_CALLER_H
 
 #include <unordered_map>
-#include <string>
-#include <functional>
 
 #include "Builtin.h"
 
 class BuiltinCaller{
     public:
     static bool HasBuiltin(const std::string& name);
-    static void RegisterBuiltin(const std::string& name, BuiltinType builtin);
-    static void CallBuiltin(const std::string& name);
+    static void RegisterBuiltin(const std::string& name, BuiltinFunctionType* builtin);
+    static void CallBuiltin(const std::string& name, const std::vector<std::string>& argv);
 
     private:
-    using BuiltinMapType = std::unordered_map<std::string, BuiltinType>;
+    using BuiltinMapType = std::unordered_map<std::string, BuiltinFunctionType*>;
     static BuiltinMapType Builtins;
 };
 
