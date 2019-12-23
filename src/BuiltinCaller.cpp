@@ -29,9 +29,6 @@ void BuiltinCaller::CallBuiltin(const std::string& name, ParserState& state, con
     }
     auto builtin = BuiltinCaller::Builtins[name];
 
-    // TODO: remove
-    char toRemove[1][1];
-
     BuiltinStreams streams;
     builtin(state, streams, argv); // TODO: properly call
     std::cout << streams.out.str();
