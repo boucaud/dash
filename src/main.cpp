@@ -7,6 +7,7 @@
 #include "builtins/set.h"
 #include "builtins/echo.h"
 
+#define ERROR_MACRO(message) std::cerr << "ERROR: " << __FILE__ << ":" << __LINE__ << " " << message << std::endl; std::exit(EXIT_FAILURE);
 // TODO: first thing: create class to register all builtins, use it in initialize
 // TODO: then -> if not builtin, launch program
 
@@ -24,6 +25,85 @@ void prompt()
     std::cout << "$ ";
 }
 
+bool isSeparator(char c) {
+    switch(c) {
+        case '\0':
+        case ' ':
+        case '\n':
+        case '|':
+        case ';':
+        case '\t':
+        case '\r':
+        case '<':
+        case '>':
+        case '&':
+            return true;
+        default:
+        return false;
+    }
+}
+
+std::string::const_iterator getNextToken(const std::string& line, const std::string::const_iterator &begin)
+{
+    bool isEscaping = false;
+    bool isInBrackets = false;
+    int numberOfParens = 0;
+    // TODO: support {}???
+
+    std::string::const_iterator it = begin;
+    while(it != line.end()) {
+        char c = *it;
+        if(isEscaping) {
+            isEscaping = false;
+        }
+        // TODO: shortcut if alphanumeric
+        else if(c == '\\') {
+            isEscaping = true;
+        } else if(c == '(') {
+            numberOfParens++;
+        } else if(c == ')') {
+            if(numberOfParens == 0) {
+                ERROR_MACRO("Unmatched ')'\n");
+            }
+            numberOfParens --;
+        } else if(c == '['){
+            if(it != begin) {
+                isInBrackets = true;
+            }
+        } else if(c == ']') {
+            if(isInBrackets && numberOfParens == 0) {
+                isInBrackets = false;
+            }
+        }
+        else if(c == '\'' || c == '"') {
+            //TODO: jump to matching
+            while(++it != line.end()) {
+                if(*it == '\\') {
+                    ++it;
+                } else if(*it == c) {
+                    break;
+                }
+            }
+            if(it == line.end()) {
+                ERROR_MACRO("\\ at end of line");
+            }
+        } else if(isSeparator(c) && !isInBrackets && !isEscaping && numberOfParens == 0) {
+            break;
+        }
+        ++it;
+    }
+
+    if(numberOfParens > 0) {
+        ERROR_MACRO("Mismatched parenthesis");
+    }
+    if(isInBrackets) {
+        ERROR_MACRO("Mismatched brackets");
+    }
+
+    return it;
+}
+
+// TODO: tokens can have separators
 std::string expandToken(const std::string& token)
 {
     auto it = token.begin();
@@ -59,21 +139,25 @@ void parseLine(const std::string& line)
     {
         return;
     }
-    // TODO: will need to to more if handling quotes
     std::vector<std::string> tokens;
-    std::stringstream ss(line);
-
-    std::string temp;
-    while(getline(ss, temp, ' '))
+    std::string::const_iterator it = line.begin();
+    while(it != line.end())
     {
-        if(!temp.empty())
+        auto nextIt = getNextToken(line, it);
+        std::string token(it, nextIt);
+
+        if(!token.empty())
         {
-            std::string expanded = expandToken(temp);
+            std::string expanded = expandToken(token);
             if(!expanded.empty())
             {
                 tokens.push_back(expanded);
             }
         }
+        if(nextIt == line.end()) {
+            break;
+        }
+        it = nextIt + 1;
     }
 
     if(tokens.empty())
