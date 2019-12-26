@@ -165,6 +165,31 @@ std::string::const_iterator getNextWord(
     return it;
 }
 
+std::string::const_iterator getNextSymbol(
+    const std::string::const_iterator& begin,
+    const std::string::const_iterator& end,
+    char symbol)
+{
+    std::string::const_iterator it = begin + 1;
+    while (it != end)
+    {
+        if (*it == '\\')
+        {
+            ++it;
+            if (it == end)
+            {
+                ERROR_MACRO(std::string("Missing ") + symbol);
+            }
+        }
+        else if (*it == symbol)
+        {
+            return it;
+        }
+        ++it;
+    }
+    ERROR_MACRO(std::string("Missing ") + symbol);
+}
+
 std::string expandToken(const std::string& token, bool supportQuotes = true)
 {
     auto it = token.begin();
@@ -179,15 +204,34 @@ std::string expandToken(const std::string& token, bool supportQuotes = true)
         {
             case '$':
             {
+                int index = 0;
                 auto endNameIt = getNextWord(it, end);
                 if (it + 1 == endNameIt)
                 {
                     ERROR_MACRO("Expected variable name after '$'");
                 }
-                result.append(state.getEnvironment()
-                                  .get(std::string(it + 1, endNameIt))
-                                  .getValue());
-                it = endNameIt - 1;
+                std::string varName(it + 1, endNameIt);
+                if (*endNameIt == '[')
+                {
+                    auto closingBracket = getNextSymbol(endNameIt, end, ']');
+                    std::string bracketContents =
+                        expandToken(std::string(endNameIt + 1, closingBracket));
+                    try
+                    {
+                        index = std::stoi(bracketContents);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        ERROR_MACRO("Invalid index value");
+                    }
+                    it = closingBracket;
+                }
+                else
+                {
+                    it = endNameIt - 1;
+                }
+                result.append(
+                    state.getEnvironment().get(varName).getValue(index));
             }
             break;
             case '\'':
@@ -224,13 +268,13 @@ std::string expandToken(const std::string& token, bool supportQuotes = true)
     }
     return result;
 }
-void parseLine(const std::string& line)
+std::vector<std::string> parseLine(const std::string& line)
 {
+    std::vector<std::string> tokens;
     if (line.empty())
     {
-        return;
+        return tokens;
     }
-    std::vector<std::string> tokens;
     std::string::const_iterator it = line.begin();
     while (it != line.end())
     {
@@ -252,16 +296,7 @@ void parseLine(const std::string& line)
         it = nextIt + 1;
     }
 
-    if (tokens.empty())
-    {
-        return;
-    }
-
-    const std::string command = tokens[0];
-    if (BuiltinCaller::HasBuiltin(command))
-    {
-        BuiltinCaller::CallBuiltin(command, state, tokens);
-    }
+    return tokens;
 }
 
 void mainLoop()
@@ -271,7 +306,13 @@ void mainLoop()
     {
         prompt();
         std::getline(std::cin, line);
-        parseLine(line);
+        auto tokens = parseLine(line);
+
+        const std::string command = tokens[0];
+        if (BuiltinCaller::HasBuiltin(command))
+        {
+            BuiltinCaller::CallBuiltin(command, state, tokens);
+        }
     }
 }
 
