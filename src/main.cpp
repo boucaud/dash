@@ -276,11 +276,13 @@ std::vector<std::string> parseLine(const std::string& line)
         return tokens;
     }
     std::string::const_iterator it = line.begin();
+    std::string::const_iterator previousIt = it;
     while (it != line.end())
     {
         auto nextIt = getNextToken(line, it);
+        // TODO: get separator type from this string.
+        std::string separator(previousIt, it);
         std::string token(it, nextIt);
-
         if (!token.empty())
         {
             std::string expanded = expandToken(token);
@@ -293,6 +295,7 @@ std::vector<std::string> parseLine(const std::string& line)
         {
             break;
         }
+        previousIt = nextIt;
         it = nextIt + 1;
     }
 
