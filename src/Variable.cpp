@@ -4,16 +4,16 @@
 
 Variable::Variable(const std::vector<std::string>& values)
 {
-    if(values.empty())
+    if (values.empty())
     {
         return;
     }
 
     this->values.reserve(values.size());
     // Copy one-by-one, to check for empty strings
-    for(auto value : values)
+    for (auto value : values)
     {
-        if(!value.empty())
+        if (!value.empty())
         {
             this->values.push_back(value);
         }
@@ -23,7 +23,7 @@ Variable::Variable(const std::vector<std::string>& values)
 
 Variable::Variable(const std::string& value)
 {
-    if(value.empty())
+    if (value.empty())
     {
         return;
     }
@@ -32,25 +32,22 @@ Variable::Variable(const std::string& value)
 
 std::string Variable::getValue(unsigned int index) const
 {
-    if(this->values.empty() || index >= this->values.size())
+    if (this->values.empty() || index >= this->values.size())
     {
         return std::string();
     }
     return this->values[index];
 }
 
-unsigned int Variable::getCount() const
-{
-    return this->values.size();
-}
+unsigned int Variable::getCount() const { return this->values.size(); }
 
 std::string Variable::toString() const
 {
     std::stringstream ss;
     bool isFirst = true;
-    for(auto value : this->values)
+    for (auto value : this->values)
     {
-        if(!isFirst)
+        if (!isFirst)
         {
             ss << " ";
         }
@@ -65,7 +62,7 @@ std::string Variable::toString() const
 
 void Variable::append(const std::string& value)
 {
-    if(value.empty())
+    if (value.empty())
     {
         return;
     }
@@ -74,7 +71,7 @@ void Variable::append(const std::string& value)
 
 void Variable::append(const std::vector<std::string>& values)
 {
-    if(values.empty())
+    if (values.empty())
     {
         return;
     }
@@ -85,7 +82,7 @@ void Variable::append(const std::vector<std::string>& values)
 
 void Variable::prepend(const std::vector<std::string>& values)
 {
-    if(values.empty())
+    if (values.empty())
     {
         return;
     }
@@ -96,7 +93,7 @@ void Variable::prepend(const std::vector<std::string>& values)
 
 void Variable::prepend(const std::string& value)
 {
-    if(value.empty())
+    if (value.empty())
     {
         return;
     }

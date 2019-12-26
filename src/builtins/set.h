@@ -4,7 +4,7 @@
 #include "../Builtin.h"
 namespace Builtins
 {
-    BuiltinFunctionType set;
+BuiltinFunctionType set;
 }
 
 #endif

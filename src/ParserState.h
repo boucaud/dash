@@ -3,10 +3,12 @@
 
 #include "Environment.h"
 
-class ParserState{
-    public:
+class ParserState
+{
+   public:
     Environment& getEnvironment();
-    private:
+
+   private:
     Environment env;
 };
 

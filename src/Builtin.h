@@ -2,18 +2,21 @@
 #define BUILTIN_H
 
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "ParserState.h"
 
-struct BuiltinStreams{
+struct BuiltinStreams
+{
     // TODO: first 2 as const?
     std::stringstream in;
     std::stringstream err;
     std::stringstream out;
 };
 
-using BuiltinFunctionType = int(ParserState& state, BuiltinStreams& streams, const std::vector<std::string>& argv);
+using BuiltinFunctionType = int(ParserState& state,
+    BuiltinStreams& streams,
+    const std::vector<std::string>& argv);
 
 #endif

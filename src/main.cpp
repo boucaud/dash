@@ -1,13 +1,16 @@
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "BuiltinCaller.h"
-#include "builtins/set.h"
 #include "builtins/echo.h"
+#include "builtins/set.h"
 
-#define ERROR_MACRO(message) std::cerr << "ERROR: " << __FILE__ << ":" << __LINE__ << " " << message << std::endl; std::exit(EXIT_FAILURE);
+#define ERROR_MACRO(message)                                                \
+    std::cerr << "ERROR: " << __FILE__ << ":" << __LINE__ << " " << message \
+              << std::endl;                                                 \
+    std::exit(EXIT_FAILURE);
 
 // TODO: move ofc
 ParserState state;
@@ -19,13 +22,12 @@ void initialize()
     BuiltinCaller::RegisterBuiltin("echo", Builtins::echo);
 }
 
-void prompt()
-{
-    std::cout << "$ ";
-}
+void prompt() { std::cout << "$ "; }
 
-bool isSeparator(char c) {
-    switch(c) {
+bool isSeparator(char c)
+{
+    switch (c)
+    {
         case '\0':
         case ' ':
         case '\n':
@@ -38,17 +40,24 @@ bool isSeparator(char c) {
         case '&':
             return true;
         default:
-        return false;
+            return false;
     }
 }
 
-std::string::const_iterator getNextQuote(const std::string::const_iterator& begin, const std::string::const_iterator& end) {
+std::string::const_iterator getNextQuote(
+    const std::string::const_iterator& begin,
+    const std::string::const_iterator& end)
+{
     auto quote = *begin;
     std::string::const_iterator it = begin + 1;
-    while(it != end) {
-        if(*it == '\\') {
+    while (it != end)
+    {
+        if (*it == '\\')
+        {
             ++it;
-        } else if(*it == quote) {
+        }
+        else if (*it == quote)
+        {
             return it;
         }
         ++it;
@@ -56,68 +65,99 @@ std::string::const_iterator getNextQuote(const std::string::const_iterator& begi
     return end;
 }
 
-bool isAlphaNumeric(char c) {
-    return c == '_' || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+bool isAlphaNumeric(char c)
+{
+    return c == '_' || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z');
 }
 
-std::string::const_iterator getNextToken(const std::string& line, const std::string::const_iterator &begin)
+std::string::const_iterator getNextToken(
+    const std::string& line, const std::string::const_iterator& begin)
 {
     bool isEscaping = false;
     bool isInBrackets = false;
     int numberOfParens = 0;
 
     std::string::const_iterator it = begin;
-    while(it != line.end()) {
+    while (it != line.end())
+    {
         char c = *it;
-        if(isEscaping) {
+        if (isEscaping)
+        {
             isEscaping = false;
-        } else if (isAlphaNumeric(c)) {
+        }
+        else if (isAlphaNumeric(c))
+        {
             // shortcut if alphanumeric
         }
-        else if(c == '\\') {
+        else if (c == '\\')
+        {
             isEscaping = true;
-        } else if(c == '(') {
+        }
+        else if (c == '(')
+        {
             numberOfParens++;
-        } else if(c == ')') {
-            if(numberOfParens == 0) {
+        }
+        else if (c == ')')
+        {
+            if (numberOfParens == 0)
+            {
                 ERROR_MACRO("Unmatched ')'\n");
             }
-            numberOfParens --;
-        } else if(c == '['){
-            if(it != begin) {
+            numberOfParens--;
+        }
+        else if (c == '[')
+        {
+            if (it != begin)
+            {
                 isInBrackets = true;
             }
-        } else if(c == ']') {
-            if(isInBrackets && numberOfParens == 0) {
+        }
+        else if (c == ']')
+        {
+            if (isInBrackets && numberOfParens == 0)
+            {
                 isInBrackets = false;
             }
         }
-        else if(c == '\'' || c == '"') {
+        else if (c == '\'' || c == '"')
+        {
             auto quoteEnd = getNextQuote(it, line.end());
-            if(quoteEnd == line.end()) {
+            if (quoteEnd == line.end())
+            {
                 ERROR_MACRO("Quotes are not balanced");
             }
             it = quoteEnd;
-        } else if(isSeparator(c) && !isInBrackets && !isEscaping && numberOfParens == 0) {
+        }
+        else if (isSeparator(c) && !isInBrackets && !isEscaping &&
+                 numberOfParens == 0)
+        {
             break;
         }
         ++it;
     }
 
-    if(numberOfParens > 0) {
+    if (numberOfParens > 0)
+    {
         ERROR_MACRO("Mismatched parenthesis");
     }
-    if(isInBrackets) {
+    if (isInBrackets)
+    {
         ERROR_MACRO("Mismatched brackets");
     }
 
     return it;
 }
 
-std::string::const_iterator getNextWord(const std::string::const_iterator& begin, const std::string::const_iterator& end) {
+std::string::const_iterator getNextWord(
+    const std::string::const_iterator& begin,
+    const std::string::const_iterator& end)
+{
     std::string::const_iterator it = begin + 1;
-    while(it != end) {
-        if(!isAlphaNumeric(*it)) {
+    while (it != end)
+    {
+        if (!isAlphaNumeric(*it))
+        {
             break;
         }
         ++it;
@@ -133,41 +173,50 @@ std::string expandToken(const std::string& token, bool supportQuotes = true)
     std::string result;
     result.reserve(token.size());
 
-    while(it != end)
+    while (it != end)
     {
-        switch(*it)
+        switch (*it)
         {
-            case '$':{
+            case '$':
+            {
                 auto endNameIt = getNextWord(it, end);
-                if(it + 1 == endNameIt) {
+                if (it + 1 == endNameIt)
+                {
                     ERROR_MACRO("Expected variable name after '$'");
                 }
-                result.append(state.getEnvironment().get(std::string(it+1, endNameIt)).getValue());
+                result.append(state.getEnvironment()
+                                  .get(std::string(it + 1, endNameIt))
+                                  .getValue());
                 it = endNameIt - 1;
             }
             break;
             case '\'':
-            if(supportQuotes) {
+                if (supportQuotes)
+                {
+                    auto quoteEnd = getNextQuote(it, end);
+                    result.append(it + 1, quoteEnd);
+                    it = quoteEnd;
+                }
+                else
+                {
+                    result.push_back(*it);
+                }
+                break;
+            case '"':
+            {
                 auto quoteEnd = getNextQuote(it, end);
-                result.append(it + 1, quoteEnd);
-                it = quoteEnd;
-            } else {
-                result.push_back(*it);
-            }
-            break;
-            case '"': {
-                auto quoteEnd = getNextQuote(it, end);
-                std::string quotedString = expandToken(std::string(it+1, quoteEnd), false);
+                std::string quotedString =
+                    expandToken(std::string(it + 1, quoteEnd), false);
                 result.append(quotedString);
                 it = quoteEnd;
             }
             break;
             case '\\':
-                if(it + 1 != end)
+                if (it + 1 != end)
                 {
                     result.push_back(*(++it));
                 }
-            break;
+                break;
             default:
                 result.push_back(*it);
         }
@@ -177,47 +226,48 @@ std::string expandToken(const std::string& token, bool supportQuotes = true)
 }
 void parseLine(const std::string& line)
 {
-    if(line.empty())
+    if (line.empty())
     {
         return;
     }
     std::vector<std::string> tokens;
     std::string::const_iterator it = line.begin();
-    while(it != line.end())
+    while (it != line.end())
     {
         auto nextIt = getNextToken(line, it);
         std::string token(it, nextIt);
 
-        if(!token.empty())
+        if (!token.empty())
         {
             std::string expanded = expandToken(token);
-            if(!expanded.empty())
+            if (!expanded.empty())
             {
                 tokens.push_back(expanded);
             }
         }
-        if(nextIt == line.end()) {
+        if (nextIt == line.end())
+        {
             break;
         }
         it = nextIt + 1;
     }
 
-    if(tokens.empty()) {
+    if (tokens.empty())
+    {
         return;
     }
 
     const std::string command = tokens[0];
-    if(BuiltinCaller::HasBuiltin(command))
+    if (BuiltinCaller::HasBuiltin(command))
     {
         BuiltinCaller::CallBuiltin(command, state, tokens);
     }
-
 }
 
 void mainLoop()
 {
     std::string line;
-    while(!std::cin.eof())
+    while (!std::cin.eof())
     {
         prompt();
         std::getline(std::cin, line);
@@ -225,11 +275,9 @@ void mainLoop()
     }
 }
 
-void shutDown()
-{
-}
+void shutDown() {}
 
-int main(int argv, char **argc)
+int main(int argv, char** argc)
 {
     initialize();
 

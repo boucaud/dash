@@ -4,7 +4,7 @@
 #include "../Builtin.h"
 namespace Builtins
 {
-    BuiltinFunctionType echo;
+BuiltinFunctionType echo;
 }
 
 #endif

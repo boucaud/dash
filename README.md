@@ -1,3 +1,3 @@
-basic shell experiment, nothing too interesting.
+Basic shell experiment, loosely based on fish syntax. Nothing too interesting.
 
 Adrien Boucaud

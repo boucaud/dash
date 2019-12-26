@@ -5,13 +5,15 @@
 
 namespace Builtins
 {
-int echo(ParserState& state, BuiltinStreams& streams, const std::vector<std::string>& argv)
+int echo(ParserState& state,
+    BuiltinStreams& streams,
+    const std::vector<std::string>& argv)
 {
     auto end = argv.end();
-    for(auto it = argv.begin() + 1; it != end; ++it)
+    for (auto it = argv.begin() + 1; it != end; ++it)
     {
         streams.out << *it;
-        if(it + 1 != end)
+        if (it + 1 != end)
         {
             streams.out << " ";
         }
@@ -19,4 +21,4 @@ int echo(ParserState& state, BuiltinStreams& streams, const std::vector<std::str
     streams.out << std::endl;
     return EXIT_SUCCESS;
 }
-}
+}  // namespace Builtins

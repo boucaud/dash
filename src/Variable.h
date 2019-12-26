@@ -4,13 +4,14 @@
 #include <string>
 #include <vector>
 
-class Variable{
-    public:
+class Variable
+{
+   public:
     Variable() = default;
     Variable(const std::vector<std::string>& values);
     Variable(const std::string& value);
 
-    std::string getValue(unsigned int index=0) const;
+    std::string getValue(unsigned int index = 0) const;
     unsigned int getCount() const;
 
     void append(const std::string& value);
@@ -21,7 +22,7 @@ class Variable{
 
     std::string toString() const;
 
-    private:
+   private:
     std::vector<std::string> values;
 };
 

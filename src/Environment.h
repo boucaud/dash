@@ -7,13 +7,15 @@
 
 class Environment
 {
-    public:
+   public:
     Environment() = default;
     bool has(const std::string& name) const;
-    void set(const std::string& name, const Variable& variable, bool isGlobal = false);
+    void set(const std::string& name,
+        const Variable& variable,
+        bool isGlobal = false);
     Variable& get(const std::string& name);
 
-    private:
+   private:
     using VariableMapType = std::unordered_map<std::string, Variable>;
     VariableMapType globalVariables;
     VariableMapType localVariables;

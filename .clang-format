@@ -1,0 +1,17 @@
+---
+# This configuration requires clang-format 4.0 or higher.
+BasedOnStyle: Google
+IndentWidth: 4
+DerivePointerAlignment: false
+PointerAlignment: Left
+AlignAfterOpenBracket: DontAlign
+AlignOperands: true
+AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterDefinitionReturnType: None
+BreakBeforeBraces: Allman
+BinPackArguments: false
+BinPackParameters: false
+ColumnLimit: 80
+SpaceAfterTemplateKeyword: true
+Standard: Cpp11
+...
