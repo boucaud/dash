@@ -1,7 +1,7 @@
 #include "Variable.h"
 
+#include <iostream>
 #include <sstream>
-
 Variable::Variable(const std::vector<std::string>& values)
 {
     if (values.empty())
@@ -9,93 +9,57 @@ Variable::Variable(const std::vector<std::string>& values)
         return;
     }
 
-    this->values.reserve(values.size());
-    // Copy one-by-one, to check for empty strings
-    for (auto value : values)
-    {
-        if (!value.empty())
-        {
-            this->values.push_back(value);
-        }
-    }
-    this->values.shrink_to_fit();
+    this->set(values);
 }
 
 Variable::Variable(const std::string& value)
 {
     if (value.empty())
     {
-        return;
+        this->values.clear();
     }
-    this->values = std::vector<std::string>(1, value);
+    else
+    {
+        this->values[0] = value;
+    }
 }
 
 std::string Variable::getValue(unsigned int index) const
 {
-    if (this->values.empty() || index >= this->values.size())
+    if (this->values.empty() || this->values.count(index) == 0)
     {
         return std::string();
     }
-    return this->values[index];
+    return this->values.at(index);
 }
 
 unsigned int Variable::getCount() const { return this->values.size(); }
 
-std::string Variable::toString() const
-{
-    std::stringstream ss;
-    bool isFirst = true;
-    for (auto value : this->values)
-    {
-        if (!isFirst)
-        {
-            ss << " ";
-        }
-        else
-        {
-            isFirst = false;
-        }
-        ss << value;
-    }
-    return ss.str();
-}
-
-void Variable::append(const std::string& value)
+void Variable::set(const std::string& value, unsigned int index)
 {
     if (value.empty())
     {
-        return;
+        this->values.erase(index);
     }
-    this->values.push_back(value);
+    else
+    {
+        this->values[index] = value;
+    }
 }
 
-void Variable::append(const std::vector<std::string>& values)
+void Variable::set(const std::vector<std::string>& vals)
 {
-    if (values.empty())
+    if (vals.empty())
     {
-        return;
+        this->clear();
     }
-    // TODO: no check for empty strings
-    this->values.reserve(values.size() + this->values.size());
-    this->values.insert(this->values.end(), values.begin(), values.end());
+    else
+    {
+        for (unsigned int i = 0; i < vals.size(); ++i)
+        {
+            this->values[i] = vals[i];
+        }
+    }
 }
 
-void Variable::prepend(const std::vector<std::string>& values)
-{
-    if (values.empty())
-    {
-        return;
-    }
-    // TODO: no check for empty strings
-    this->values.reserve(values.size() + this->values.size());
-    this->values.insert(this->values.begin(), values.begin(), values.end());
-}
-
-void Variable::prepend(const std::string& value)
-{
-    if (value.empty())
-    {
-        return;
-    }
-    this->values.insert(this->values.begin(), value);
-}
+void Variable::clear() { this->values.clear(); }

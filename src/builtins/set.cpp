@@ -15,8 +15,9 @@ int set(ParserState& state,
         streams.err << "Usage: set <name> <value>" << std::endl;
     }
     std::string name = argv[1];
-    state.getEnvironment().get(name).append(
-        std::vector<std::string>(argv.begin() + 2, argv.end()));
+    Variable& var = state.getEnvironment().get(name);
+    var.clear();
+    var.set(std::vector<std::string>(argv.begin() + 2, argv.end()));
     return EXIT_SUCCESS;
 }
 }  // namespace Builtins

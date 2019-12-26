@@ -1,6 +1,7 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -14,16 +15,13 @@ class Variable
     std::string getValue(unsigned int index = 0) const;
     unsigned int getCount() const;
 
-    void append(const std::string& value);
-    void append(const std::vector<std::string>& values);
+    void set(const std::string& value, unsigned int index = 0);
+    void set(const std::vector<std::string>& values);
 
-    void prepend(const std::string& value);
-    void prepend(const std::vector<std::string>& values);
-
-    std::string toString() const;
+    void clear();
 
    private:
-    std::vector<std::string> values;
+    std::map<unsigned int, std::string> values;
 };
 
 #endif

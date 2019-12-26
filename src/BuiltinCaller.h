@@ -16,6 +16,7 @@ class BuiltinCaller
         const std::vector<std::string>& argv);
 
    private:
+    BuiltinCaller() = delete;
     using BuiltinMapType =
         std::unordered_map<std::string, BuiltinFunctionType*>;
     static BuiltinMapType Builtins;
